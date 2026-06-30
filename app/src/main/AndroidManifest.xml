@@ -15,6 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MCommerceMobile">
         <activity
+            android:name=".PriceAnalysisActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".CartActivity"
             android:exported="false" />
         <activity
