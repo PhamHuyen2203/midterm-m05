@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MCommerceMobile">
         <activity
+            android:name=".PotentialProductActivity"
+            android:exported="false" />
+        <activity
             android:name=".PriceAnalysisActivity"
             android:exported="false" />
         <activity

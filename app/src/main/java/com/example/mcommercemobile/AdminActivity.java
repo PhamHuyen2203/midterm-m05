@@ -11,7 +11,9 @@ public class AdminActivity
         extends AppCompatActivity {
 
     private ImageButton btnBackAdmin;
+
     private Button btnOpenPriceAnalysis;
+    private Button btnOpenPotentialProducts;
 
     @Override
     protected void onCreate(
@@ -35,6 +37,10 @@ public class AdminActivity
         btnOpenPriceAnalysis = findViewById(
                 R.id.btnOpenPriceAnalysis
         );
+
+        btnOpenPotentialProducts = findViewById(
+                R.id.btnOpenPotentialProducts
+        );
     }
 
     private void addEvents() {
@@ -47,6 +53,17 @@ public class AdminActivity
                     Intent intent = new Intent(
                             AdminActivity.this,
                             PriceAnalysisActivity.class
+                    );
+
+                    startActivity(intent);
+                }
+        );
+
+        btnOpenPotentialProducts.setOnClickListener(
+                view -> {
+                    Intent intent = new Intent(
+                            AdminActivity.this,
+                            PotentialProductActivity.class
                     );
 
                     startActivity(intent);
