@@ -39,6 +39,8 @@ public class CartActivity
     private TextView txtEmptyCart;
     private TextView txtCartTotal;
 
+    private EditText edtCustomerName;
+    private EditText edtCustomerEmail;
     private EditText edtShippingAddress;
 
     private Spinner spinnerPaymentMethod;
@@ -104,6 +106,14 @@ public class CartActivity
 
         txtCartTotal = findViewById(
                 R.id.txtCartTotal
+        );
+
+        edtCustomerName = findViewById(
+                R.id.edtCustomerName
+        );
+
+        edtCustomerEmail = findViewById(
+                R.id.edtCustomerEmail
         );
 
         edtShippingAddress = findViewById(
@@ -370,6 +380,32 @@ public class CartActivity
             return;
         }
 
+        String customerName =
+                edtCustomerName.getText()
+                        .toString()
+                        .trim();
+
+        if (customerName.isEmpty()) {
+            edtCustomerName.setError(
+                    "Vui lòng nhập họ tên."
+            );
+            edtCustomerName.requestFocus();
+            return;
+        }
+
+        String customerEmail =
+                edtCustomerEmail.getText()
+                        .toString()
+                        .trim();
+
+        if (customerEmail.isEmpty()) {
+            edtCustomerEmail.setError(
+                    "Vui lòng nhập email."
+            );
+            edtCustomerEmail.requestFocus();
+            return;
+        }
+
         String shippingAddress =
                 edtShippingAddress.getText()
                         .toString()
@@ -425,6 +461,8 @@ public class CartActivity
                         "Thanh toán",
                         (dialog, which) ->
                                 performCheckout(
+                                        customerName,
+                                        customerEmail,
                                         shippingAddress,
                                         paymentMethod
                                 )
@@ -436,6 +474,8 @@ public class CartActivity
      * Gọi OrderDAO để thực hiện transaction Checkout.
      */
     private void performCheckout(
+            String customerName,
+            String customerEmail,
             String shippingAddress,
             String paymentMethod
     ) {
@@ -458,6 +498,8 @@ public class CartActivity
                         OrderDAO.checkout(
                                 getApplicationContext(),
                                 currentUserID,
+                                customerName,
+                                customerEmail,
                                 shippingAddress,
                                 paymentMethod
                         );
@@ -474,6 +516,8 @@ public class CartActivity
                 runOnUiThread(() -> {
                     displayCart(items);
 
+                    edtCustomerName.setText("");
+                    edtCustomerEmail.setText("");
                     edtShippingAddress.setText("");
 
                     setWorkingState(false);
@@ -586,6 +630,14 @@ public class CartActivity
                 !working
                         && cartAdapter != null
                         && cartAdapter.getItemCount() > 0
+        );
+
+        edtCustomerName.setEnabled(
+                !working
+        );
+
+        edtCustomerEmail.setEnabled(
+                !working
         );
 
         edtShippingAddress.setEnabled(

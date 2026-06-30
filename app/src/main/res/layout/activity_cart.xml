@@ -99,15 +99,45 @@
         android:padding="12dp">
 
         <EditText
-            android:id="@+id/edtShippingAddress"
+            android:id="@+id/edtCustomerName"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Nhập địa chỉ giao hàng"
-            android:imeOptions="actionDone"
-            android:inputType="textPostalAddress"
-            android:maxLines="2"
+            android:hint="Họ và tên khách hàng"
+            android:imeOptions="actionNext"
+            android:inputType="textPersonName|textCapWords"
+            android:maxLines="1"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
+            android:singleLine="true"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtCustomerEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="6dp"
+            android:hint="Email khách hàng"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:singleLine="true"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtShippingAddress"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:gravity="top|start"
+            android:hint="Nhập địa chỉ giao hàng"
+            android:imeOptions="actionDone"
+            android:inputType="textPostalAddress|textCapSentences|textMultiLine"
+            android:maxLines="3"
+            android:paddingStart="8dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp"
             android:textSize="14sp" />
 
         <Spinner

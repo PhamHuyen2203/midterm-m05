@@ -99,6 +99,15 @@
         tools:text="Thanh toán: Chuyển khoản ngân hàng" />
 
     <TextView
+        android:id="@+id/txtAdminOrderItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="#4B5563"
+        android:textSize="13sp"
+        tools:text="Sản phẩm: 2 loại | Tổng số lượng: 5" />
+
+    <TextView
         android:id="@+id/txtAdminOrderTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -15,6 +15,9 @@ public class AdminOrderItem {
     private final String paymentMethod;
     private final String paymentStatus;
 
+    private final int lineCount;
+    private final int totalQuantity;
+
     public AdminOrderItem(
             long orderID,
             int userID,
@@ -24,7 +27,9 @@ public class AdminOrderItem {
             long totalAmount,
             String shippingAddress,
             String paymentMethod,
-            String paymentStatus
+            String paymentStatus,
+            int lineCount,
+            int totalQuantity
     ) {
         this.orderID = orderID;
         this.userID = userID;
@@ -35,6 +40,8 @@ public class AdminOrderItem {
         this.shippingAddress = shippingAddress;
         this.paymentMethod = paymentMethod;
         this.paymentStatus = paymentStatus;
+        this.lineCount = lineCount;
+        this.totalQuantity = totalQuantity;
     }
 
     public long getOrderID() {
@@ -71,5 +78,13 @@ public class AdminOrderItem {
 
     public String getPaymentStatus() {
         return paymentStatus;
+    }
+
+    public int getLineCount() {
+        return lineCount;
+    }
+
+    public int getTotalQuantity() {
+        return totalQuantity;
     }
 }

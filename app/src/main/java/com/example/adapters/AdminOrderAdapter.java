@@ -88,6 +88,13 @@ public class AdminOrderAdapter
                         + order.getOrderDate()
         );
 
+        holder.txtOrderItems.setText(
+                "Sản phẩm: "
+                        + order.getLineCount()
+                        + " loại | Tổng số lượng: "
+                        + order.getTotalQuantity()
+        );
+
         holder.txtShippingAddress.setText(
                 "Giao đến: "
                         + order.getShippingAddress()
@@ -162,7 +169,7 @@ public class AdminOrderAdapter
         private final TextView txtOrderDate;
         private final TextView txtShippingAddress;
         private final TextView txtPaymentMethod;
-
+        private final TextView txtOrderItems;
         private final TextView txtOrderTotal;
 
         public AdminOrderViewHolder(
@@ -184,6 +191,10 @@ public class AdminOrderAdapter
 
             txtCustomerEmail = itemView.findViewById(
                     R.id.txtAdminCustomerEmail
+            );
+
+            txtOrderItems = itemView.findViewById(
+                    R.id.txtAdminOrderItems
             );
 
             txtOrderDate = itemView.findViewById(

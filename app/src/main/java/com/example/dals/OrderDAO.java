@@ -69,6 +69,8 @@ public final class OrderDAO {
     public static CheckoutResult checkout(
             Context context,
             int userID,
+            String customerName,
+            String customerEmail,
             String shippingAddress,
             String paymentMethod
     ) throws IOException {
@@ -76,6 +78,22 @@ public final class OrderDAO {
         if (userID <= 0) {
             throw new IllegalArgumentException(
                     "UserID không hợp lệ."
+            );
+        }
+
+        if (customerName == null
+                || customerName.trim().isEmpty()) {
+
+            throw new IllegalArgumentException(
+                    "Họ tên khách hàng không được để trống."
+            );
+        }
+
+        if (customerEmail == null
+                || customerEmail.trim().isEmpty()) {
+
+            throw new IllegalArgumentException(
+                    "Email khách hàng không được để trống."
             );
         }
 
@@ -104,6 +122,91 @@ public final class OrderDAO {
             );
 
             database.beginTransaction();
+
+            // =================================================
+// BƯỚC 0: KIỂM TRA VÀ CẬP NHẬT USER
+// =================================================
+
+            String checkUserSql =
+                    "SELECT COUNT(*) " +
+                            "FROM \"User\" " +
+                            "WHERE UserID = ?";
+
+            SQLiteStatement checkUserStatement =
+                    database.compileStatement(
+                            checkUserSql
+                    );
+
+            checkUserStatement.bindLong(
+                    1,
+                    userID
+            );
+
+            long userCount =
+                    checkUserStatement.simpleQueryForLong();
+
+            if (userCount == 0) {
+                throw new IllegalStateException(
+                        "Không tìm thấy người dùng có UserID="
+                                + userID
+                );
+            }
+
+            String updateUserSql =
+                    "UPDATE \"User\" " +
+                            "SET FullName = ?, " +
+                            "Email = ?, " +
+                            "Address = ?, " +
+                            "Role = ? " +
+                            "WHERE UserID = ?";
+
+            SQLiteStatement updateUserStatement =
+                    database.compileStatement(
+                            updateUserSql
+                    );
+
+            updateUserStatement.bindString(
+                    1,
+                    customerName.trim()
+            );
+
+            updateUserStatement.bindString(
+                    2,
+                    customerEmail.trim()
+            );
+
+            updateUserStatement.bindString(
+                    3,
+                    shippingAddress.trim()
+            );
+
+            updateUserStatement.bindString(
+                    4,
+                    "Customer"
+            );
+
+            updateUserStatement.bindLong(
+                    5,
+                    userID
+            );
+
+            int updatedUserRows =
+                    updateUserStatement
+                            .executeUpdateDelete();
+
+            if (updatedUserRows != 1) {
+                throw new IllegalStateException(
+                        "Không thể cập nhật thông tin khách hàng."
+                );
+            }
+
+            Log.d(
+                    TAG,
+                    "UPDATE User: UserID="
+                            + userID
+                            + ", FullName="
+                            + customerName
+            );
 
             // ================================================
             // BƯỚC 1: ĐỌC VÀ TÍNH TỔNG GIỎ HÀNG
@@ -359,15 +462,13 @@ public final class OrderDAO {
 
     /**
      * Câu 10:
-     *
      * Lấy danh sách đơn hàng đã thanh toán.
      *
-     * Yêu cầu:
-     * - JOIN bảng Orders với bảng User.
+     * - JOIN Orders với User.
+     * - JOIN OrderDetail để lấy số loại và tổng số lượng.
      * - Phân trang bằng LIMIT và OFFSET.
      */
-    public static ArrayList<AdminOrderItem>
-    getPaidOrdersPage(
+    public static ArrayList<AdminOrderItem> getPaidOrdersPage(
             Context context,
             int limit,
             int offset
@@ -398,19 +499,34 @@ public final class OrderDAO {
 
             String sql =
                     "SELECT " +
-                            "o.OrderID, " +
-                            "o.UserID, " +
+                            "o.OrderID AS OrderID, " +
+                            "o.UserID AS UserID, " +
                             "u.FullName AS CustomerName, " +
                             "u.Email AS CustomerEmail, " +
+                            "o.OrderDate AS OrderDate, " +
+                            "o.TotalAmount AS TotalAmount, " +
+                            "o.ShippingAddress AS ShippingAddress, " +
+                            "o.PaymentMethod AS PaymentMethod, " +
+                            "o.PaymentStatus AS PaymentStatus, " +
+                            "COUNT(od.OrderDetailID) AS LineCount, " +
+                            "COALESCE(SUM(od.Quantity), 0) " +
+                            "AS TotalQuantity " +
+                            "FROM Orders AS o " +
+                            "INNER JOIN \"User\" AS u " +
+                            "ON u.UserID = o.UserID " +
+                            "LEFT JOIN OrderDetail AS od " +
+                            "ON od.OrderID = o.OrderID " +
+                            "WHERE o.PaymentStatus = ? " +
+                            "GROUP BY " +
+                            "o.OrderID, " +
+                            "o.UserID, " +
+                            "u.FullName, " +
+                            "u.Email, " +
                             "o.OrderDate, " +
                             "o.TotalAmount, " +
                             "o.ShippingAddress, " +
                             "o.PaymentMethod, " +
                             "o.PaymentStatus " +
-                            "FROM Orders AS o " +
-                            "INNER JOIN \"User\" AS u " +
-                            "ON u.UserID = o.UserID " +
-                            "WHERE o.PaymentStatus = ? " +
                             "ORDER BY o.OrderID DESC " +
                             "LIMIT ? OFFSET ?";
 
@@ -428,9 +544,28 @@ public final class OrderDAO {
                             + offset
             );
 
+            /*
+             * Quan trọng:
+             * Phải thực hiện rawQuery trước khi gọi
+             * cursor.getColumnIndexOrThrow().
+             */
             cursor = database.rawQuery(
                     sql,
                     arguments
+            );
+
+            if (cursor == null) {
+                throw new IllegalStateException(
+                        "SQLite không trả về Cursor."
+                );
+            }
+
+            Log.d(
+                    TAG,
+                    "Columns: "
+                            + java.util.Arrays.toString(
+                            cursor.getColumnNames()
+                    )
             );
 
             int orderIDIndex =
@@ -478,6 +613,16 @@ public final class OrderDAO {
                             "PaymentStatus"
                     );
 
+            int lineCountIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "LineCount"
+                    );
+
+            int totalQuantityIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "TotalQuantity"
+                    );
+
             while (cursor.moveToNext()) {
 
                 AdminOrderItem order =
@@ -516,6 +661,14 @@ public final class OrderDAO {
 
                                 cursor.getString(
                                         paymentStatusIndex
+                                ),
+
+                                cursor.getInt(
+                                        lineCountIndex
+                                ),
+
+                                cursor.getInt(
+                                        totalQuantityIndex
                                 )
                         );
 
@@ -529,11 +682,15 @@ public final class OrderDAO {
             );
 
         } finally {
-            if (cursor != null) {
+            if (cursor != null
+                    && !cursor.isClosed()) {
+
                 cursor.close();
             }
 
-            if (database != null) {
+            if (database != null
+                    && database.isOpen()) {
+
                 database.close();
             }
         }

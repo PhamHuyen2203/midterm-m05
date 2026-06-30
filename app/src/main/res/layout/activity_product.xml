@@ -70,7 +70,7 @@
             android:backgroundTint="#0B74E5"
             android:hint="Nhập tên sản phẩm"
             android:imeOptions="actionSearch"
-            android:inputType="text"
+            android:inputType="text|textCapSentences|textAutoCorrect"
             android:maxLines="1"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
