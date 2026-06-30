@@ -8,6 +8,7 @@
     android:orientation="vertical"
     tools:context=".CartActivity">
 
+    <!-- Thanh tiêu đề -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -43,6 +44,7 @@
 
     </LinearLayout>
 
+    <!-- Tóm tắt giỏ hàng -->
     <TextView
         android:id="@+id/txtCartSummary"
         android:layout_width="match_parent"
@@ -52,6 +54,7 @@
         android:textColor="#4B5563"
         android:textSize="14sp" />
 
+    <!-- Danh sách sản phẩm -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -86,16 +89,57 @@
 
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/txtCartTotal"
+    <!-- Khu vực Checkout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:gravity="end"
-        android:padding="16dp"
-        android:text="Tổng cộng: 0 ₫"
-        android:textColor="#DC2626"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <EditText
+            android:id="@+id/edtShippingAddress"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Nhập địa chỉ giao hàng"
+            android:imeOptions="actionDone"
+            android:inputType="textPostalAddress"
+            android:maxLines="2"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/spinnerPaymentMethod"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="6dp"
+            android:spinnerMode="dropdown" />
+
+        <TextView
+            android:id="@+id/txtCartTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="Tổng cộng: 0 ₫"
+            android:textColor="#DC2626"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnCheckout"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:backgroundTint="#0B74E5"
+            android:enabled="false"
+            android:text="CHECKOUT - THANH TOÁN"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
 </LinearLayout>

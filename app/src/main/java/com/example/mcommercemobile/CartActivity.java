@@ -2,17 +2,23 @@ package com.example.mcommercemobile;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adapters.CartAdapter;
 import com.example.dals.CartDAO;
+import com.example.dals.OrderDAO;
 import com.example.dals.UserDAO;
 import com.example.models.CartItem;
 
@@ -33,11 +39,19 @@ public class CartActivity
     private TextView txtEmptyCart;
     private TextView txtCartTotal;
 
+    private EditText edtShippingAddress;
+
+    private Spinner spinnerPaymentMethod;
+
+    private Button btnCheckout;
+
     private ProgressBar progressCart;
 
     private CartAdapter cartAdapter;
 
     private int currentUserID = -1;
+
+    private long currentTotalAmount = 0;
 
     private boolean isWorking = false;
 
@@ -60,6 +74,7 @@ public class CartActivity
         );
 
         addViews();
+        setupPaymentMethods();
         addEvents();
     }
 
@@ -91,6 +106,18 @@ public class CartActivity
                 R.id.txtCartTotal
         );
 
+        edtShippingAddress = findViewById(
+                R.id.edtShippingAddress
+        );
+
+        spinnerPaymentMethod = findViewById(
+                R.id.spinnerPaymentMethod
+        );
+
+        btnCheckout = findViewById(
+                R.id.btnCheckout
+        );
+
         progressCart = findViewById(
                 R.id.progressCart
         );
@@ -99,6 +126,10 @@ public class CartActivity
                 new LinearLayoutManager(
                         CartActivity.this
                 )
+        );
+
+        recyclerViewCart.setHasFixedSize(
+                true
         );
 
         cartAdapter = new CartAdapter(
@@ -138,9 +169,38 @@ public class CartActivity
         );
     }
 
+    private void setupPaymentMethods() {
+        String[] paymentMethods = {
+                "Chuyển khoản ngân hàng",
+                "Ví điện tử",
+                "Thanh toán khi nhận hàng (COD)"
+        };
+
+        ArrayAdapter<String> paymentAdapter =
+                new ArrayAdapter<>(
+                        CartActivity.this,
+                        android.R.layout
+                                .simple_spinner_item,
+                        paymentMethods
+                );
+
+        paymentAdapter.setDropDownViewResource(
+                android.R.layout
+                        .simple_spinner_dropdown_item
+        );
+
+        spinnerPaymentMethod.setAdapter(
+                paymentAdapter
+        );
+    }
+
     private void addEvents() {
         btnBackCart.setOnClickListener(
                 view -> finish()
+        );
+
+        btnCheckout.setOnClickListener(
+                view -> confirmCheckout()
         );
     }
 
@@ -149,11 +209,7 @@ public class CartActivity
             return;
         }
 
-        isWorking = true;
-
-        progressCart.setVisibility(
-                View.VISIBLE
-        );
+        setWorkingState(true);
 
         executorService.execute(() -> {
             try {
@@ -170,21 +226,12 @@ public class CartActivity
 
                 runOnUiThread(() -> {
                     displayCart(items);
-
-                    isWorking = false;
-
-                    progressCart.setVisibility(
-                            View.GONE
-                    );
+                    setWorkingState(false);
                 });
 
             } catch (Exception exception) {
                 runOnUiThread(() -> {
-                    isWorking = false;
-
-                    progressCart.setVisibility(
-                            View.GONE
-                    );
+                    setWorkingState(false);
 
                     Toast.makeText(
                             CartActivity.this,
@@ -255,11 +302,7 @@ public class CartActivity
             return;
         }
 
-        isWorking = true;
-
-        progressCart.setVisibility(
-                View.VISIBLE
-        );
+        setWorkingState(true);
 
         executorService.execute(() -> {
             try {
@@ -283,12 +326,7 @@ public class CartActivity
 
                 runOnUiThread(() -> {
                     displayCart(items);
-
-                    isWorking = false;
-
-                    progressCart.setVisibility(
-                            View.GONE
-                    );
+                    setWorkingState(false);
 
                     Toast.makeText(
                             CartActivity.this,
@@ -301,15 +339,176 @@ public class CartActivity
 
             } catch (Exception exception) {
                 runOnUiThread(() -> {
-                    isWorking = false;
-
-                    progressCart.setVisibility(
-                            View.GONE
-                    );
+                    setWorkingState(false);
 
                     Toast.makeText(
                             CartActivity.this,
                             "Lỗi giỏ hàng: "
+                                    + exception.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
+            }
+        });
+    }
+
+    /**
+     * Kiểm tra thông tin rồi hiện hộp thoại xác nhận.
+     */
+    private void confirmCheckout() {
+        if (isWorking) {
+            return;
+        }
+
+        if (cartAdapter.getItemCount() == 0) {
+            Toast.makeText(
+                    CartActivity.this,
+                    "Giỏ hàng đang trống.",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        String shippingAddress =
+                edtShippingAddress.getText()
+                        .toString()
+                        .trim();
+
+        if (shippingAddress.isEmpty()) {
+            edtShippingAddress.setError(
+                    "Vui lòng nhập địa chỉ giao hàng."
+            );
+
+            edtShippingAddress.requestFocus();
+            return;
+        }
+
+        Object selectedItem =
+                spinnerPaymentMethod
+                        .getSelectedItem();
+
+        if (selectedItem == null) {
+            Toast.makeText(
+                    CartActivity.this,
+                    "Vui lòng chọn phương thức thanh toán.",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        String paymentMethod =
+                selectedItem.toString();
+
+        new AlertDialog.Builder(
+                CartActivity.this
+        )
+                .setTitle(
+                        "Xác nhận thanh toán"
+                )
+                .setMessage(
+                        "Tổng tiền: "
+                                + currencyFormat.format(
+                                currentTotalAmount
+                        )
+                                + "\n\nĐịa chỉ: "
+                                + shippingAddress
+                                + "\n\nPhương thức: "
+                                + paymentMethod
+                )
+                .setNegativeButton(
+                        "Hủy",
+                        null
+                )
+                .setPositiveButton(
+                        "Thanh toán",
+                        (dialog, which) ->
+                                performCheckout(
+                                        shippingAddress,
+                                        paymentMethod
+                                )
+                )
+                .show();
+    }
+
+    /**
+     * Gọi OrderDAO để thực hiện transaction Checkout.
+     */
+    private void performCheckout(
+            String shippingAddress,
+            String paymentMethod
+    ) {
+        if (isWorking) {
+            return;
+        }
+
+        setWorkingState(true);
+
+        executorService.execute(() -> {
+            try {
+                if (currentUserID <= 0) {
+                    currentUserID =
+                            UserDAO.getOrCreateDemoCustomer(
+                                    getApplicationContext()
+                            );
+                }
+
+                OrderDAO.CheckoutResult result =
+                        OrderDAO.checkout(
+                                getApplicationContext(),
+                                currentUserID,
+                                shippingAddress,
+                                paymentMethod
+                        );
+
+                /*
+                 * Sau Checkout, Cart phải trống.
+                 */
+                ArrayList<CartItem> items =
+                        CartDAO.getCartItems(
+                                getApplicationContext(),
+                                currentUserID
+                        );
+
+                runOnUiThread(() -> {
+                    displayCart(items);
+
+                    edtShippingAddress.setText("");
+
+                    setWorkingState(false);
+
+                    new AlertDialog.Builder(
+                            CartActivity.this
+                    )
+                            .setTitle(
+                                    "Thanh toán thành công"
+                            )
+                            .setMessage(
+                                    "Mã đơn hàng: #"
+                                            + result.getOrderID()
+                                            + "\nSố lượng: "
+                                            + result.getTotalQuantity()
+                                            + "\nTổng tiền: "
+                                            + currencyFormat.format(
+                                            result
+                                                    .getTotalAmount()
+                                    )
+                            )
+                            .setPositiveButton(
+                                    "Đóng",
+                                    null
+                            )
+                            .show();
+                });
+
+            } catch (Exception exception) {
+                runOnUiThread(() -> {
+                    setWorkingState(false);
+
+                    Toast.makeText(
+                            CartActivity.this,
+                            "Thanh toán thất bại: "
                                     + exception.getMessage(),
                             Toast.LENGTH_LONG
                     ).show();
@@ -335,6 +534,8 @@ public class CartActivity
             totalAmount +=
                     item.getSubtotal();
         }
+
+        currentTotalAmount = totalAmount;
 
         txtCartSummary.setText(
                 items.size()
@@ -363,6 +564,36 @@ public class CartActivity
                 isEmpty
                         ? View.GONE
                         : View.VISIBLE
+        );
+
+        btnCheckout.setEnabled(
+                !isWorking && !isEmpty
+        );
+    }
+
+    private void setWorkingState(
+            boolean working
+    ) {
+        isWorking = working;
+
+        progressCart.setVisibility(
+                working
+                        ? View.VISIBLE
+                        : View.GONE
+        );
+
+        btnCheckout.setEnabled(
+                !working
+                        && cartAdapter != null
+                        && cartAdapter.getItemCount() > 0
+        );
+
+        edtShippingAddress.setEnabled(
+                !working
+        );
+
+        spinnerPaymentMethod.setEnabled(
+                !working
         );
     }
 
