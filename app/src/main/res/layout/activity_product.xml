@@ -16,7 +16,8 @@
         android:background="#0B74E5"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="8dp">
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -33,25 +34,140 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="DANH SÁCH SẢN PHẨM"
+            android:text="TÌM KIẾM SẢN PHẨM"
             android:textColor="#FFFFFF"
             android:textSize="19sp"
             android:textStyle="bold" />
 
-        <!-- View cân bằng với nút quay lại -->
         <View
             android:layout_width="48dp"
             android:layout_height="48dp" />
 
     </LinearLayout>
 
-    <!-- Hiển thị số lượng đã tải -->
+    <!-- Khu vực tìm kiếm và lọc -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/bg_product_item"
+        android:elevation="2dp"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <EditText
+            android:id="@+id/edtKeyword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:backgroundTint="#0B74E5"
+            android:hint="Nhập tên sản phẩm"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:singleLine="true"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edtMinPrice"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:backgroundTint="#0B74E5"
+                android:hint="Giá thấp nhất"
+                android:inputType="number"
+                android:maxLength="12"
+                android:maxLines="1"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textSize="14sp" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="1dp" />
+
+            <EditText
+                android:id="@+id/edtMaxPrice"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:backgroundTint="#0B74E5"
+                android:hint="Giá cao nhất"
+                android:imeOptions="actionSearch"
+                android:inputType="number"
+                android:maxLength="12"
+                android:maxLines="1"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSearch"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:backgroundTint="#0B74E5"
+                android:text="TÌM KIẾM"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="1dp" />
+
+            <Button
+                android:id="@+id/btnReset"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:backgroundTint="#6B7280"
+                android:text="ĐẶT LẠI"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Hiển thị bộ lọc hiện tại -->
+    <TextView
+        android:id="@+id/txtFilterSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="14dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="14dp"
+        android:textColor="#0B74E5"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:text="Từ khóa: sách | Giá: 50.000 - 300.000 VNĐ" />
+
     <TextView
         android:id="@+id/txtLoadedCount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="14dp"
-        android:paddingTop="10dp"
+        android:paddingTop="8dp"
         android:paddingEnd="14dp"
         android:paddingBottom="6dp"
         android:text="Đã tải: 0 sản phẩm"
@@ -69,7 +185,6 @@
         android:scrollbars="vertical"
         tools:listitem="@layout/item_product" />
 
-    <!-- Loading -->
     <ProgressBar
         android:id="@+id/progressLoading"
         style="?android:attr/progressBarStyleSmall"
@@ -79,7 +194,6 @@
         android:layout_margin="10dp"
         android:visibility="gone" />
 
-    <!-- Trạng thái cuối danh sách hoặc lỗi -->
     <TextView
         android:id="@+id/txtLoadState"
         android:layout_width="match_parent"

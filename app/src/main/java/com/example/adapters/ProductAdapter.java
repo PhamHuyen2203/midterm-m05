@@ -146,6 +146,27 @@ public class ProductAdapter
         );
     }
 
+    /**
+     * Xóa dữ liệu cũ trước khi chạy một truy vấn mới.
+     *
+     * Ví dụ:
+     * - Người dùng tìm từ khóa mới.
+     * - Người dùng thay đổi khoảng giá.
+     * - Người dùng nhấn đặt lại.
+     */
+    public void clearProducts() {
+        int oldSize = products.size();
+
+        products.clear();
+
+        if (oldSize > 0) {
+            notifyItemRangeRemoved(
+                    0,
+                    oldSize
+            );
+        }
+    }
+
     public static class ProductViewHolder
             extends RecyclerView.ViewHolder {
 
