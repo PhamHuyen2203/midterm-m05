@@ -6,7 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import com.example.models.AdminOrderItem;
+
 import java.io.IOException;
+import java.util.ArrayList;
 
 public final class OrderDAO {
 
@@ -55,11 +58,13 @@ public final class OrderDAO {
     }
 
     /**
-     * Thực hiện Checkout trong cùng một transaction:
+     * Câu 7:
      *
-     * 1. INSERT Orders.
-     * 2. INSERT Cart sang OrderDetail.
-     * 3. DELETE Cart.
+     * 1. INSERT vào Orders.
+     * 2. Chuyển Cart sang OrderDetail.
+     * 3. DELETE dữ liệu trong Cart.
+     *
+     * Tất cả thao tác nằm trong cùng một transaction.
      */
     public static CheckoutResult checkout(
             Context context,
@@ -98,22 +103,16 @@ public final class OrderDAO {
                     context
             );
 
-            /*
-             * Bắt đầu transaction.
-             * Nếu bất kỳ bước nào lỗi thì toàn bộ dữ liệu
-             * sẽ được rollback.
-             */
             database.beginTransaction();
 
-            // =================================================
+            // ================================================
             // BƯỚC 1: ĐỌC VÀ TÍNH TỔNG GIỎ HÀNG
-            // =================================================
+            // ================================================
 
             String cartSummarySql =
                     "SELECT " +
                             "COUNT(*) AS LineCount, " +
-                            "COALESCE(SUM(c.Quantity), 0) " +
-                            "AS TotalQuantity, " +
+                            "COALESCE(SUM(c.Quantity), 0) AS TotalQuantity, " +
                             "COALESCE(SUM(" +
                             "c.Quantity * p.PromotionalPrice" +
                             "), 0) AS TotalAmount " +
@@ -168,9 +167,9 @@ public final class OrderDAO {
                 );
             }
 
-            // =================================================
+            // ================================================
             // BƯỚC 2: INSERT VÀO ORDERS
-            // =================================================
+            // ================================================
 
             String insertOrderSql =
                     "INSERT INTO Orders " +
@@ -208,10 +207,6 @@ public final class OrderDAO {
                     paymentMethod.trim()
             );
 
-            /*
-             * Để Câu 10 có thể lấy các đơn đã thanh toán,
-             * Checkout thành công sẽ lưu trạng thái Paid.
-             */
             insertOrderStatement.bindString(
                     5,
                     "Paid"
@@ -234,16 +229,10 @@ public final class OrderDAO {
                             + totalAmount
             );
 
-            // =================================================
+            // ================================================
             // BƯỚC 3: CHUYỂN CART SANG ORDERDETAIL
-            // =================================================
+            // ================================================
 
-            /*
-             * Một câu INSERT ... SELECT sẽ chuyển toàn bộ
-             * sản phẩm trong Cart sang OrderDetail.
-             *
-             * UnitPrice được lấy từ PromotionalPrice.
-             */
             String insertOrderDetailSql =
                     "INSERT INTO OrderDetail " +
                             "(" +
@@ -270,10 +259,6 @@ public final class OrderDAO {
                     }
             );
 
-            /*
-             * Kiểm tra số dòng OrderDetail vừa tạo
-             * phải bằng số dòng Cart ban đầu.
-             */
             String countOrderDetailSql =
                     "SELECT COUNT(*) " +
                             "FROM OrderDetail " +
@@ -297,8 +282,8 @@ public final class OrderDAO {
                 throw new IllegalStateException(
                         "Số chi tiết đơn hàng không khớp. " +
                                 "Cart=" + lineCount +
-                                ", OrderDetail="
-                                + insertedDetailCount
+                                ", OrderDetail=" +
+                                insertedDetailCount
                 );
             }
 
@@ -310,9 +295,9 @@ public final class OrderDAO {
                             + insertedDetailCount
             );
 
-            // =================================================
-            // BƯỚC 4: XÓA DỮ LIỆU CŨ TRONG CART
-            // =================================================
+            // ================================================
+            // BƯỚC 4: XÓA CART
+            // ================================================
 
             String deleteCartSql =
                     "DELETE FROM Cart " +
@@ -348,9 +333,6 @@ public final class OrderDAO {
                             + deletedCartRows
             );
 
-            /*
-             * Chỉ commit khi tất cả bước đều thành công.
-             */
             database.setTransactionSuccessful();
 
             return new CheckoutResult(
@@ -373,5 +355,189 @@ public final class OrderDAO {
                 database.close();
             }
         }
+    }
+
+    /**
+     * Câu 10:
+     *
+     * Lấy danh sách đơn hàng đã thanh toán.
+     *
+     * Yêu cầu:
+     * - JOIN bảng Orders với bảng User.
+     * - Phân trang bằng LIMIT và OFFSET.
+     */
+    public static ArrayList<AdminOrderItem>
+    getPaidOrdersPage(
+            Context context,
+            int limit,
+            int offset
+    ) throws IOException {
+
+        if (limit <= 0) {
+            throw new IllegalArgumentException(
+                    "LIMIT phải lớn hơn 0."
+            );
+        }
+
+        if (offset < 0) {
+            throw new IllegalArgumentException(
+                    "OFFSET không được nhỏ hơn 0."
+            );
+        }
+
+        ArrayList<AdminOrderItem> orders =
+                new ArrayList<>();
+
+        SQLiteDatabase database = null;
+        Cursor cursor = null;
+
+        try {
+            database = DatabaseHelper.openDatabase(
+                    context
+            );
+
+            String sql =
+                    "SELECT " +
+                            "o.OrderID, " +
+                            "o.UserID, " +
+                            "u.FullName AS CustomerName, " +
+                            "u.Email AS CustomerEmail, " +
+                            "o.OrderDate, " +
+                            "o.TotalAmount, " +
+                            "o.ShippingAddress, " +
+                            "o.PaymentMethod, " +
+                            "o.PaymentStatus " +
+                            "FROM Orders AS o " +
+                            "INNER JOIN \"User\" AS u " +
+                            "ON u.UserID = o.UserID " +
+                            "WHERE o.PaymentStatus = ? " +
+                            "ORDER BY o.OrderID DESC " +
+                            "LIMIT ? OFFSET ?";
+
+            String[] arguments = {
+                    "Paid",
+                    String.valueOf(limit),
+                    String.valueOf(offset)
+            };
+
+            Log.d(
+                    TAG,
+                    "SELECT paid orders: LIMIT="
+                            + limit
+                            + ", OFFSET="
+                            + offset
+            );
+
+            cursor = database.rawQuery(
+                    sql,
+                    arguments
+            );
+
+            int orderIDIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "OrderID"
+                    );
+
+            int userIDIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "UserID"
+                    );
+
+            int customerNameIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "CustomerName"
+                    );
+
+            int customerEmailIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "CustomerEmail"
+                    );
+
+            int orderDateIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "OrderDate"
+                    );
+
+            int totalAmountIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "TotalAmount"
+                    );
+
+            int shippingAddressIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "ShippingAddress"
+                    );
+
+            int paymentMethodIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "PaymentMethod"
+                    );
+
+            int paymentStatusIndex =
+                    cursor.getColumnIndexOrThrow(
+                            "PaymentStatus"
+                    );
+
+            while (cursor.moveToNext()) {
+
+                AdminOrderItem order =
+                        new AdminOrderItem(
+                                cursor.getLong(
+                                        orderIDIndex
+                                ),
+
+                                cursor.getInt(
+                                        userIDIndex
+                                ),
+
+                                cursor.getString(
+                                        customerNameIndex
+                                ),
+
+                                cursor.getString(
+                                        customerEmailIndex
+                                ),
+
+                                cursor.getString(
+                                        orderDateIndex
+                                ),
+
+                                cursor.getLong(
+                                        totalAmountIndex
+                                ),
+
+                                cursor.getString(
+                                        shippingAddressIndex
+                                ),
+
+                                cursor.getString(
+                                        paymentMethodIndex
+                                ),
+
+                                cursor.getString(
+                                        paymentStatusIndex
+                                )
+                        );
+
+                orders.add(order);
+            }
+
+            Log.d(
+                    TAG,
+                    "Paid orders loaded: "
+                            + orders.size()
+            );
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+
+            if (database != null) {
+                database.close();
+            }
+        }
+
+        return orders;
     }
 }

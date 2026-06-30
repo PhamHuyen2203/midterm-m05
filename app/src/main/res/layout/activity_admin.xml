@@ -43,51 +43,79 @@
 
     </LinearLayout>
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingTop="26dp"
-        android:paddingEnd="20dp"
-        android:text="Báo cáo và quản lý dữ liệu"
-        android:textColor="#111827"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingTop="6dp"
-        android:paddingEnd="20dp"
-        android:text="Chọn chức năng quản trị cần thực hiện."
-        android:textColor="#6B7280"
-        android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
 
-    <Button
-        android:id="@+id/btnOpenPriceAnalysis"
-        android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="20dp"
-        android:backgroundTint="#0B74E5"
-        android:text="PHÂN TÍCH GIÁ THEO DANH MỤC"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingTop="26dp"
+                android:paddingEnd="20dp"
+                android:text="Báo cáo và quản lý dữ liệu"
+                android:textColor="#111827"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnOpenPotentialProducts"
-        android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="20dp"
-        android:backgroundTint="#F59E0B"
-        android:text="TOP 10 SẢN PHẨM TIỀM NĂNG"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="20dp"
+                android:text="Chọn chức năng quản trị cần thực hiện."
+                android:textColor="#6B7280"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnOpenPriceAnalysis"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="#0B74E5"
+                android:text="PHÂN TÍCH GIÁ THEO DANH MỤC"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnOpenPotentialProducts"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="#F59E0B"
+                android:text="TOP 10 SẢN PHẨM TIỀM NĂNG"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnOpenAdminOrders"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="#16A34A"
+                android:text="QUẢN LÝ ĐƠN HÀNG ĐÃ THANH TOÁN"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

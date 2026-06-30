@@ -14,6 +14,7 @@ public class AdminActivity
 
     private Button btnOpenPriceAnalysis;
     private Button btnOpenPotentialProducts;
+    private Button btnOpenAdminOrders;
 
     @Override
     protected void onCreate(
@@ -41,6 +42,10 @@ public class AdminActivity
         btnOpenPotentialProducts = findViewById(
                 R.id.btnOpenPotentialProducts
         );
+
+        btnOpenAdminOrders = findViewById(
+                R.id.btnOpenAdminOrders
+        );
     }
 
     private void addEvents() {
@@ -64,6 +69,17 @@ public class AdminActivity
                     Intent intent = new Intent(
                             AdminActivity.this,
                             PotentialProductActivity.class
+                    );
+
+                    startActivity(intent);
+                }
+        );
+
+        btnOpenAdminOrders.setOnClickListener(
+                view -> {
+                    Intent intent = new Intent(
+                            AdminActivity.this,
+                            AdminOrderActivity.class
                     );
 
                     startActivity(intent);

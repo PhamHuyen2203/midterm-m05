@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="6dp"
+    android:background="@drawable/bg_product_item"
+    android:elevation="2dp"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txtAdminOrderID"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#111827"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="Đơn hàng #15" />
+
+        <TextView
+            android:id="@+id/txtAdminPaymentStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#DCFCE7"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:textColor="#15803D"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="PAID" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#E5E7EB" />
+
+    <TextView
+        android:id="@+id/txtAdminCustomerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#111827"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:text="Khách hàng: Demo Customer" />
+
+    <TextView
+        android:id="@+id/txtAdminCustomerEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:textColor="#6B7280"
+        android:textSize="13sp"
+        tools:text="customer@mcommerce.local" />
+
+    <TextView
+        android:id="@+id/txtAdminOrderDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="#4B5563"
+        android:textSize="13sp"
+        tools:text="Ngày đặt: 2026-07-01 10:30:00" />
+
+    <TextView
+        android:id="@+id/txtAdminShippingAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:maxLines="2"
+        android:textColor="#4B5563"
+        android:textSize="13sp"
+        tools:text="Giao đến: 227 Nguyễn Văn Cừ, Quận 5" />
+
+    <TextView
+        android:id="@+id/txtAdminPaymentMethod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="#4B5563"
+        android:textSize="13sp"
+        tools:text="Thanh toán: Chuyển khoản ngân hàng" />
+
+    <TextView
+        android:id="@+id/txtAdminOrderTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="end"
+        android:textColor="#DC2626"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        tools:text="Tổng tiền: 1.250.000 ₫" />
+
+</LinearLayout>
