@@ -6,15 +6,21 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity
+        extends AppCompatActivity {
 
     private Button btnOpenProduct;
+    private Button btnOpenCart;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(
+            Bundle savedInstanceState
+    ) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(
+                R.layout.activity_main
+        );
 
         addViews();
         addEvents();
@@ -24,16 +30,33 @@ public class MainActivity extends AppCompatActivity {
         btnOpenProduct = findViewById(
                 R.id.btnOpenProduct
         );
+
+        btnOpenCart = findViewById(
+                R.id.btnOpenCart
+        );
     }
 
     private void addEvents() {
-        btnOpenProduct.setOnClickListener(view -> {
-            Intent intent = new Intent(
-                    MainActivity.this,
-                    ProductActivity.class
-            );
+        btnOpenProduct.setOnClickListener(
+                view -> {
+                    Intent intent = new Intent(
+                            MainActivity.this,
+                            ProductActivity.class
+                    );
 
-            startActivity(intent);
-        });
+                    startActivity(intent);
+                }
+        );
+
+        btnOpenCart.setOnClickListener(
+                view -> {
+                    Intent intent = new Intent(
+                            MainActivity.this,
+                            CartActivity.class
+                    );
+
+                    startActivity(intent);
+                }
+        );
     }
 }

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="6dp"
+    android:background="@drawable/bg_product_item"
+    android:elevation="2dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/imgCartProduct"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:contentDescription="Hình sản phẩm"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_gallery" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtCartProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="#111827"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="Tên sản phẩm" />
+
+        <TextView
+            android:id="@+id/txtCartUnitPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="#DC2626"
+            android:textSize="14sp"
+            tools:text="100.000 ₫" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDecrease"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:text="−"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txtCartQuantity"
+                android:layout_width="48dp"
+                android:layout_height="42dp"
+                android:gravity="center"
+                android:textColor="#111827"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="2" />
+
+            <Button
+                android:id="@+id/btnIncrease"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:text="+"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/btnDeleteCartItem"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Xóa sản phẩm"
+                android:padding="9dp"
+                android:src="@android:drawable/ic_menu_delete"
+                android:tint="#DC2626" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtCartSubtotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="#0B74E5"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Thành tiền: 200.000 ₫" />
+
+    </LinearLayout>
+
+</LinearLayout>

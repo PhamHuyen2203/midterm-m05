@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adapters.ProductAdapter;
 import com.example.dals.ProductDAO;
+import com.example.dals.CartDAO;
+import com.example.dals.UserDAO;
 import com.example.models.Product;
 
 import java.text.NumberFormat;
@@ -47,6 +50,8 @@ public class ProductActivity
 
     private Button btnSearch;
     private Button btnReset;
+
+    private Button btnOpenCart;
 
     private RecyclerView recyclerViewProduct;
 
@@ -130,6 +135,10 @@ public class ProductActivity
                 R.id.btnReset
         );
 
+        btnOpenCart = findViewById(
+                R.id.btnOpenCart
+        );
+
         recyclerViewProduct = findViewById(
                 R.id.recyclerViewProduct
         );
@@ -162,7 +171,9 @@ public class ProductActivity
                 true
         );
 
-        productAdapter = new ProductAdapter();
+        productAdapter = new ProductAdapter(
+                this::addProductToCart
+        );
 
         recyclerViewProduct.setAdapter(
                 productAdapter
@@ -181,6 +192,14 @@ public class ProductActivity
         btnReset.setOnClickListener(
                 view -> resetSearch()
         );
+
+        btnOpenCart.setOnClickListener(view -> {
+            Intent intent = new Intent(
+                    ProductActivity.this,
+                    CartActivity.class
+            );
+            startActivity(intent);
+        });
 
         /*
          * Nhấn nút Search trên bàn phím tại ô từ khóa.
@@ -710,6 +729,61 @@ public class ProductActivity
         }
 
         currentView.clearFocus();
+    }
+    private void addProductToCart(
+            Product product
+    ) {
+        executorService.execute(() -> {
+            try {
+                int userID =
+                        UserDAO.getOrCreateDemoCustomer(
+                                getApplicationContext()
+                        );
+
+                CartDAO.AddToCartResult result =
+                        CartDAO.addOrIncreaseProduct(
+                                getApplicationContext(),
+                                userID,
+                                product.getProductID()
+                        );
+
+                runOnUiThread(() -> {
+                    String message;
+
+                    if (result.isInserted()) {
+                        message =
+                                "Đã thêm sản phẩm vào giỏ hàng.";
+                    } else {
+                        message =
+                                "Sản phẩm đã có trong giỏ. "
+                                        + "Số lượng mới: "
+                                        + result.getQuantity();
+                    }
+
+                    Toast.makeText(
+                            ProductActivity.this,
+                            message,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                });
+
+            } catch (Exception exception) {
+                Log.e(
+                        "Cart",
+                        "Lỗi thêm giỏ hàng",
+                        exception
+                );
+
+                runOnUiThread(() ->
+                        Toast.makeText(
+                                ProductActivity.this,
+                                "Không thể thêm vào giỏ: "
+                                        + exception.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show()
+                );
+            }
+        });
     }
 
     @Override

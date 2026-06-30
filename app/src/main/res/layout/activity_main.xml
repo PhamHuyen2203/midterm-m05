@@ -52,4 +52,15 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
+    <Button
+        android:id="@+id/btnOpenCart"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="14dp"
+        android:backgroundTint="#DC2626"
+        android:text="XEM GIỎ HÀNG"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
 </LinearLayout>

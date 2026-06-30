@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,13 +25,25 @@ public class ProductAdapter
         ProductAdapter.ProductViewHolder
         > {
 
+    public interface OnAddToCartListener {
+        void onAddToCart(Product product);
+    }
+
     private final ArrayList<Product> products =
             new ArrayList<>();
+
+    private final OnAddToCartListener listener;
 
     private final NumberFormat currencyFormat =
             NumberFormat.getCurrencyInstance(
                     new Locale("vi", "VN")
             );
+
+    public ProductAdapter(
+            OnAddToCartListener listener
+    ) {
+        this.listener = listener;
+    }
 
     @NonNull
     @Override
@@ -117,6 +130,12 @@ public class ProductAdapter
                                 .ic_menu_report_image
                 )
                 .into(holder.imgProduct);
+
+        holder.btnAddToCart.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onAddToCart(product);
+            }
+        });
     }
 
     @Override
@@ -177,6 +196,7 @@ public class ProductAdapter
 
         private final TextView txtPromotionalPrice;
         private final TextView txtOriginalPrice;
+        private final Button btnAddToCart;
 
         public ProductViewHolder(
                 @NonNull View itemView
@@ -206,6 +226,11 @@ public class ProductAdapter
             txtOriginalPrice =
                     itemView.findViewById(
                             R.id.txtOriginalPrice
+                    );
+
+            btnAddToCart =
+                    itemView.findViewById(
+                            R.id.btnAddToCart
                     );
         }
     }
